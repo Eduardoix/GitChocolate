@@ -225,6 +225,7 @@ const Estoque = () => {
           {activeTab === 'insumos' && (
             <div className="card">
               <h3>Estoque de Matérias-Primas</h3>
+              <div className="table-container">
               <table className="w-full mt-3">
                 <thead>
                   <tr><th>Insumo</th><th>Estoque</th><th>Unidade</th><th>Preço Unit.</th><th>Valor Total</th><th style={{ textAlign: 'center' }}>Ações</th></tr>
@@ -256,12 +257,14 @@ const Estoque = () => {
                   </tr>
                 </tfoot>
               </table>
+              </div>
             </div>
           )}
 
           {activeTab === 'massa_base' && (
             <div className="card">
               <h3>Lotes de Chocolate (Massa)</h3>
+              <div className="table-container">
               <table className="w-full mt-3">
                 <thead>
                   <tr><th>Lote</th><th>Fórmula</th><th>Data</th><th>Saldo</th><th>Custo Total</th><th>Custo/kg</th><th style={{ textAlign: 'right' }}>Ações</th></tr>
@@ -280,12 +283,14 @@ const Estoque = () => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
 
           {activeTab === 'produtos_finais' && (
             <div className="card">
               <h3>Produtos Prontos para Venda</h3>
+              <div className="table-container">
               <table className="w-full mt-3">
                 <thead>
                   <tr><th>Produto</th><th>Categoria</th><th>Peso</th><th>Custo Unit.</th><th>Preço Venda</th><th>Margem (%)</th><th>Estoque</th><th style={{ textAlign: 'right' }}>Ações</th></tr>
@@ -310,6 +315,7 @@ const Estoque = () => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>

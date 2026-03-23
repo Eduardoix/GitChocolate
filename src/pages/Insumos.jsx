@@ -83,7 +83,8 @@ const Insumos = () => {
 
       <div className="card">
         {loading ? <p>Carregando...</p> : (
-          <table className="w-full">
+          <div className="table-container">
+            <table className="w-full">
             <thead>
               <tr>
                 <th>Nome</th>
@@ -118,6 +119,7 @@ const Insumos = () => {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

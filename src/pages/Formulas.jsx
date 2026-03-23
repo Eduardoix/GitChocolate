@@ -241,6 +241,7 @@ const Formulas = () => {
           <div className="flex-column gap-3" style={{ width: '420px' }}>
             <div className="card" style={{ borderLeft: '4px solid var(--primary)', height: '100%' }}>
               <h3>Controle de Custos e Margem</h3>
+            <div className="table-container">
             <table className="w-full mt-3" style={{ fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #eee' }}>
@@ -268,6 +269,7 @@ const Formulas = () => {
                 </tr>
               </tfoot>
             </table>
+            </div>
 
             <div className="mt-4 p-3 bg-cream rounded">
               <div className="input-group">

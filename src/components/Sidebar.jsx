@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Beaker, Package, Truck, Boxes, LogOut } from 'lucide-react';
+import { LayoutDashboard, Beaker, Package, Truck, Boxes, LogOut, Menu, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
     { name: 'Insumos', path: '/insumos', icon: <Package size={20} /> },
@@ -13,11 +14,32 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo">
-        <div className="logo-icon">C</div>
-        <h2>Choco<span>Flow</span></h2>
+    <>
+      {/* Cabeçalho Mobile */}
+      <div className="mobile-header">
+        <div className="mobile-header-logo">
+          <div className="logo-icon" style={{width: 28, height: 28, fontSize: '1rem'}}>C</div>
+          <h2>Choco<span>Flow</span></h2>
+        </div>
+        <button className="menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+          <Menu size={28} />
+        </button>
       </div>
+
+      {/* Fundo escuro atrás do Sidebar no mobile */}
+      <div 
+        className={`sidebar-overlay ${isOpen ? 'show' : ''}`} 
+        onClick={() => setIsOpen(false)}
+      />
+
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo">
+          <div className="logo-icon">C</div>
+          <h2>Choco<span>Flow</span></h2>
+          <button className="menu-close-mobile" onClick={() => setIsOpen(false)}>
+            <X size={24} />
+          </button>
+        </div>
 
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
@@ -25,6 +47,7 @@ const Sidebar = () => {
             key={item.path}
             to={item.path}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={() => setIsOpen(false)}
           >
             {item.icon}
             <span>{item.name}</span>
@@ -84,6 +107,7 @@ const Sidebar = () => {
           margin: 0;
         }
         .sidebar-logo h2 span { color: var(--secondary); }
+        .menu-close-mobile { display: none; background: transparent; color: white; border: none; }
         
         .sidebar-nav {
           flex: 1;
@@ -115,8 +139,16 @@ const Sidebar = () => {
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           padding-top: 20px;
         }
+
+        @media (max-width: 768px) {
+          .sidebar-logo h2 { display: none; }
+          .logo-icon { display: none; }
+          .menu-close-mobile { display: block; margin-left: auto; }
+          .sidebar-logo { margin-bottom: 20px; }
+        }
       `}} />
     </aside>
+    </>
   );
 };
 
