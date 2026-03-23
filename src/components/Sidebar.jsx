@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Beaker, Package, Truck, Boxes, LogOut } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Sidebar = () => {
   const menuItems = [
@@ -32,7 +33,14 @@ const Sidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
-        <button className="nav-item btn-ghost" style={{ width: '100%', justifyContent: 'flex-start' }}>
+        <button 
+          className="nav-item btn-ghost" 
+          style={{ width: '100%', justifyContent: 'flex-start' }}
+          onClick={async () => {
+            const { error } = await supabase.auth.signOut();
+            if (error) alert("Erro ao sair: " + error.message);
+          }}
+        >
           <LogOut size={20} />
           <span>Sair</span>
         </button>
