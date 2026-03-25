@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ArrowLeft, Save, Beaker, CheckCircle2, AlertCircle, Plus, Trash2, Scale } from 'lucide-react';
+import { ArrowLeft, Save, Beaker, CheckCircle2, AlertCircle, Plus, Trash2, Scale, RefreshCw } from 'lucide-react';
 
 const ProducaoEditor = () => {
   const { id } = useParams();
@@ -26,6 +26,7 @@ const ProducaoEditor = () => {
   const [adicoes, setAdicoes] = useState([]);
   const [batchData, setBatchData] = useState(null);
   const [addWeights, setAddWeights] = useState({}); // Tracking inputs per item
+  const [manualVolume, setManualVolume] = useState(volumeTotal);
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -60,6 +61,10 @@ const ProducaoEditor = () => {
   useEffect(() => {
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    if (volumeTotal) setManualVolume(volumeTotal);
+  }, [volumeTotal]);
 
   const startBatch = async () => {
     if (!formulaId || !volumeTotal || !lote) return alert('Preencha os dados básicos');
@@ -164,6 +169,39 @@ const ProducaoEditor = () => {
       fetchData(); // Refresh everything
     }
     setLoading(false);
+  };
+
+  const recalculateBatch = async () => {
+    const newVol = parseFloat(manualVolume);
+    if (isNaN(newVol) || newVol <= 0) return alert('Informe um volume válido');
+    if (!window.confirm(`Deseja recalcular toda a batelada para ${newVol}kg?`)) return;
+    
+    setLoading(true);
+    try {
+      // 1. Update the Main Batch Volume
+      await supabase.from('bateladas').update({ volume_total_kg: newVol }).eq('id', id);
+
+      // 2. Recalculate all items in the batch
+      const updates = batchItens.map(it => {
+        const itPercent = Number(it.percentual);
+        const newPrevisto = (newVol * itPercent / 100).toFixed(3);
+        const isCompleted = Number(it.peso_atual_kg || 0) >= Number(newPrevisto) - 0.001;
+        
+        return supabase.from('batelada_itens').update({ 
+          peso_previsto_kg: newPrevisto,
+          adicionado: isCompleted
+        }).eq('id', it.id);
+      });
+      await Promise.all(updates);
+      
+      setVolumeTotal(newVol);
+      await fetchData(); // Reload
+      alert(`Batelada recalculada para ${newVol}kg!`);
+    } catch (err) {
+      alert('Erro ao recalcular: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const removeWeight = async (logId, batchItem) => {
@@ -410,7 +448,31 @@ const ProducaoEditor = () => {
 
           <div className="flex-column gap-3">
               <div className="card">
-                <h3>Resumo do Processo</h3>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="m-0">Resumo do Processo</h3>
+                  <div className="flex items-center gap-2">
+                    <div className="input-with-label">
+                      <input 
+                        type="number" 
+                        step="0.1" 
+                        className="small-input"
+                        value={manualVolume}
+                        onChange={(e) => setManualVolume(e.target.value)}
+                        style={{ width: '70px', textAlign: 'center' }}
+                      />
+                    </div>
+                    <button 
+                      className="btn-secondary btn-sm flex items-center gap-1" 
+                      onClick={recalculateBatch}
+                      disabled={loading}
+                      title="Recalcular pesos com base no novo volume"
+                    >
+                      <RefreshCw size={14} className={loading ? 'spin' : ''} />
+                      Recalcular
+                    </button>
+                  </div>
+                </div>
+                
                 <div className="process-stats mt-2">
                   <div className="stat-row">
                     <span>Progresso:</span>
@@ -634,6 +696,12 @@ const ProducaoEditor = () => {
         .border-top { border-top: 1px solid #eee; }
         .border-bottom-dashed { border-bottom: 1px dashed #eee; }
         .perda-info { color: var(--error); font-size: 0.9rem; }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spin { animation: spin 1s linear infinite; }
       `}} />
     </div>
   );
