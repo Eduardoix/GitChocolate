@@ -33,8 +33,37 @@ const FormulaList = () => {
 
   const handleDelete = async (id) => {
     if (confirm('Deseja excluir esta fórmula?')) {
-      const { error } = await supabase.from('formulas').delete().eq('id', id);
-      if (!error) fetchFormulas();
+      setLoading(true);
+      try {
+        // 1. Check if batches exist
+        const { data: batches } = await supabase.from('bateladas').select('id').eq('formula_id', id).limit(1);
+        if (batches && batches.length > 0) {
+          alert('Esta fórmula possui um histórico de produção (bateladas) e não pode ser excluída.');
+          return;
+        }
+
+        // 2. Check if products exist
+        const { data: products } = await supabase.from('produtos').select('id').eq('formula_id', id).limit(1);
+        if (products && products.length > 0) {
+          alert('Esta fórmula está vinculada a um ou mais produtos cadastrados e não pode ser excluída.');
+          return;
+        }
+
+        // 3. Delete from formula_itens
+        const { error: itemError } = await supabase.from('formula_itens').delete().eq('formula_id', id);
+        if (itemError) throw itemError;
+
+        // 4. Delete from formulas
+        const { error } = await supabase.from('formulas').delete().eq('id', id);
+        if (error) throw error;
+
+        alert('Fórmula excluída com sucesso!');
+        fetchFormulas();
+      } catch (err) {
+        alert('Erro ao excluir fórmula: ' + (err.message || 'Erro desconhecido'));
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
