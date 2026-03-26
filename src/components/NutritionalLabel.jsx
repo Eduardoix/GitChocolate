@@ -21,7 +21,8 @@ const NutritionalLabel = ({
     showLote = false,
     showValidade = false,
     fontSize = 0.75,
-    width = 300,
+    width = 50.8,
+    height = 101.6,
     showIngredients = true
   } = (config || {});
 
@@ -60,7 +61,15 @@ const NutritionalLabel = ({
   };
 
   return (
-    <div className="nutritional-label-container" style={{ width: `${width}px`, fontSize: `${fontSize}rem` }}>
+    <div 
+      className="nutritional-label-container" 
+      style={{ 
+        width: `${width}mm`, 
+        height: height ? `${height}mm` : 'auto',
+        fontSize: `${fontSize}rem`,
+        overflow: 'hidden'
+      }}
+    >
       {showLogo && config.logoUrl && (
         <div className="label-logo-container">
           <img src={config.logoUrl} alt="Logo" className="label-logo" />

@@ -25,7 +25,8 @@ const Etiquetas = () => {
     showValidade: true,
     showIngredients: true,
     fontSize: 0.75,
-    width: 300,
+    width: 50.8,
+    height: 101.6,
     portionSize: 25,
     portionDescription: '3 quadradinhos',
   });
@@ -344,13 +345,25 @@ const Etiquetas = () => {
                   />
                 </div>
               </div>
-              <div className="input-group">
-                <label>Largura da Etiqueta (px)</label>
-                <input 
-                  type="number" 
-                  value={labelConfig.width}
-                  onChange={e => setLabelConfig({...labelConfig, width: parseInt(e.target.value)})}
-                />
+              <div className="flex gap-2 mb-2">
+                <div className="input-group flex-1">
+                  <label>Largura (mm)</label>
+                  <input 
+                    type="number" 
+                    step="0.1"
+                    value={labelConfig.width}
+                    onChange={e => setLabelConfig({...labelConfig, width: parseFloat(e.target.value)})}
+                  />
+                </div>
+                <div className="input-group flex-1">
+                  <label>Altura (mm)</label>
+                  <input 
+                    type="number" 
+                    step="0.1"
+                    value={labelConfig.height}
+                    onChange={e => setLabelConfig({...labelConfig, height: parseFloat(e.target.value)})}
+                  />
+                </div>
               </div>
               <div className="input-group">
                 <label>Tamanho da Fonte (rem)</label>
