@@ -7,7 +7,9 @@ const NutritionalLabel = ({
   config = {},
   lote = '',
   validade = '',
-  title = ''
+  title = '',
+  portionSize = 25,
+  portionDescription = ''
 }) => {
   const {
     showTitle = false,
@@ -30,10 +32,32 @@ const NutritionalLabel = ({
   };
 
   const d = { ...defaultData, ...(data || {}) };
+  
+  // Calculate portion values (based on d which is 100g)
+  const factor = portionSize / 100;
+  const p = {
+    kcal: (d.kcal * factor).toFixed(0),
+    kj: (d.kcal * 4.2 * factor).toFixed(0),
+    carb: (d.carb * factor).toFixed(1),
+    sugarTotal: (d.sugarTotal * factor).toFixed(1),
+    sugarAdded: (d.sugarAdded * factor).toFixed(1),
+    protein: (d.protein * factor).toFixed(1),
+    fatTotal: (d.fatTotal * factor).toFixed(1),
+    fatSat: (d.fatSat * factor).toFixed(1),
+    fatTrans: (d.fatTrans * factor).toFixed(1),
+    fiber: (d.fiber * factor).toFixed(1),
+    sodium: (d.sodium * factor).toFixed(0),
+    kj100g: (d.kcal * 4.2).toFixed(0)
+  };
 
   // Sort ingredients by percentage descending
   const sortedIngredients = [...ingredients].sort((a, b) => b.perc - a.perc);
   const ingredientsString = sortedIngredients.map(i => i.nome).join(', ');
+
+  const getVD = (val, ref) => {
+    const vd = Math.round((val / ref) * 100);
+    return vd > 0 ? `${vd}%` : '0%';
+  };
 
   return (
     <div className="nutritional-label-container" style={{ width: `${width}px`, fontSize: `${fontSize}rem` }}>
@@ -50,13 +74,14 @@ const NutritionalLabel = ({
       <div className="nutritional-label">
         <div className="label-header">INFORMAÇÃO NUTRICIONAL</div>
         <div className="label-subheader">Porções por embalagem: Variável</div>
-        <div className="label-subheader">Porção: 100g</div>
+        <div className="label-subheader">Porção: {portionSize}g {portionDescription ? `(${portionDescription})` : ''}</div>
         
         <table className="nutrition-table">
           <thead>
             <tr>
               <th style={{ textAlign: 'left' }}></th>
               <th>100g</th>
+              <th>{portionSize}g</th>
               <th>%VD*</th>
             </tr>
           </thead>
@@ -64,52 +89,68 @@ const NutritionalLabel = ({
             <tr>
               <td>Valor energético (kcal)</td>
               <td>{d.kcal}</td>
-              <td>{Math.round(d.kcal / 2000 * 100)}%</td>
+              <td>{p.kcal}</td>
+              <td>{getVD(p.kcal, 2000)}</td>
+            </tr>
+            <tr>
+              <td>Valor energético (kJ)</td>
+              <td>{p.kj100g}</td>
+              <td>{p.kj}</td>
+              <td>{getVD(p.kcal, 2000)}</td>
             </tr>
             <tr>
               <td>Carboidratos (g)</td>
               <td>{d.carb}</td>
-              <td>{Math.round(d.carb / 300 * 100)}%</td>
+              <td>{p.carb}</td>
+              <td>{getVD(p.carb, 300)}</td>
             </tr>
             <tr className="indent">
               <td>Açúcares totais (g)</td>
               <td>{d.sugarTotal}</td>
+              <td>{p.sugarTotal}</td>
               <td>-</td>
             </tr>
             <tr className="indent">
               <td>Açúcares adicionados (g)</td>
               <td>{d.sugarAdded}</td>
-              <td>{Math.round(d.sugarAdded / 50 * 100)}%</td>
+              <td>{p.sugarAdded}</td>
+              <td>{getVD(p.sugarAdded, 50)}</td>
             </tr>
             <tr>
               <td>Proteínas (g)</td>
               <td>{d.protein}</td>
-              <td>{Math.round(d.protein / 50 * 100)}%</td>
+              <td>{p.protein}</td>
+              <td>{getVD(p.protein, 50)}</td>
             </tr>
             <tr>
               <td>Gorduras totais (g)</td>
               <td>{d.fatTotal}</td>
-              <td>{Math.round(d.fatTotal / 55 * 100)}%</td>
+              <td>{p.fatTotal}</td>
+              <td>{getVD(p.fatTotal, 55)}</td>
             </tr>
             <tr className="indent">
               <td>Gorduras saturadas (g)</td>
               <td>{d.fatSat}</td>
-              <td>{Math.round(d.fatSat / 22 * 100)}%</td>
+              <td>{p.fatSat}</td>
+              <td>{getVD(p.fatSat, 22)}</td>
             </tr>
             <tr className="indent">
               <td>Gorduras trans (g)</td>
               <td>{d.fatTrans}</td>
+              <td>{p.fatTrans}</td>
               <td>-</td>
             </tr>
             <tr>
               <td>Fibras alimentares (g)</td>
               <td>{d.fiber}</td>
-              <td>{Math.round(d.fiber / 25 * 100)}%</td>
+              <td>{p.fiber}</td>
+              <td>{getVD(p.fiber, 25)}</td>
             </tr>
             <tr>
               <td>Sódio (mg)</td>
               <td>{d.sodium}</td>
-              <td>{Math.round(d.sodium / 2000 * 100)}%</td>
+              <td>{p.sodium}</td>
+              <td>{getVD(p.sodium, 2000)}</td>
             </tr>
           </tbody>
         </table>

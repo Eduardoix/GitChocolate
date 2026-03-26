@@ -26,6 +26,8 @@ const Etiquetas = () => {
     showIngredients: true,
     fontSize: 0.75,
     width: 300,
+    portionSize: 25,
+    portionDescription: '3 quadradinhos',
   });
 
   const [labelData, setLabelData] = useState({
@@ -323,8 +325,26 @@ const Etiquetas = () => {
             </div>
 
             <div className="layout-config mt-4">
-              <h3 className="section-title">Layout</h3>
-              <div className="input-group mt-2">
+              <h3 className="section-title">Porção e Layout</h3>
+              <div className="flex gap-2 mb-2">
+                <div className="input-group flex-1">
+                  <label>Porção (g)</label>
+                  <input 
+                    type="number" 
+                    value={labelConfig.portionSize}
+                    onChange={e => setLabelConfig({...labelConfig, portionSize: parseInt(e.target.value)})}
+                  />
+                </div>
+                <div className="input-group flex-1">
+                  <label>Desc. (ex: 3 quad.)</label>
+                  <input 
+                    type="text" 
+                    value={labelConfig.portionDescription}
+                    onChange={e => setLabelConfig({...labelConfig, portionDescription: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="input-group">
                 <label>Largura da Etiqueta (px)</label>
                 <input 
                   type="number" 
@@ -357,6 +377,8 @@ const Etiquetas = () => {
                 title={labelData.title}
                 lote={labelData.lote}
                 validade={labelData.validade}
+                portionSize={labelConfig.portionSize}
+                portionDescription={labelConfig.portionDescription}
               />
             </div>
           </div>
