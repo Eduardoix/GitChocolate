@@ -2,13 +2,14 @@ import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
 const NutritionalLabel = ({ 
-  data, 
+  data = {}, 
   ingredients = [], 
   config = {},
   lote = '',
   validade = '',
   title = ''
 }) => {
+  console.log('NutritionalLabel rendering with:', { data, config });
   const {
     showTitle = false,
     showQR = false,
@@ -27,7 +28,7 @@ const NutritionalLabel = ({
     fiber: 0, sodium: 0
   };
 
-  const d = { ...defaultData, ...data };
+  const d = { ...defaultData, ...(data || {}) };
 
   // Sort ingredients by percentage descending
   const sortedIngredients = [...ingredients].sort((a, b) => b.perc - a.perc);

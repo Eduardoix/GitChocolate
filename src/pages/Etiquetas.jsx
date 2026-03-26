@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import NutritionalLabel from '../components/NutritionalLabel';
 
 const Etiquetas = () => {
+  console.log('Etiquetas component init');
   const [activeTab, setActiveTab] = useState('manual'); // 'manual' | 'estoque'
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
