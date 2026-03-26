@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Beaker, Package, Truck, Boxes, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Beaker, Package, Truck, Boxes, LogOut, Menu, X, Tag } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const Sidebar = () => {
@@ -11,6 +11,7 @@ const Sidebar = () => {
     { name: 'Fórmulas', path: '/formulas', icon: <Beaker size={20} /> },
     { name: 'Produção', path: '/producao', icon: <Truck size={20} /> },
     { name: 'Estoque', path: '/estoque', icon: <Boxes size={20} /> },
+    { name: 'Etiquetas', path: '/etiquetas', icon: <Tag size={20} /> },
   ];
 
   return (

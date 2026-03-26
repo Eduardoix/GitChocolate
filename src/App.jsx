@@ -8,6 +8,7 @@ import FormulaList from './pages/FormulaList';
 import ProducaoList from './pages/ProducaoList';
 import ProducaoEditor from './pages/ProducaoEditor';
 import Estoque from './pages/Estoque';
+import Etiquetas from './pages/Etiquetas';
 import Login from './pages/Login';
 import { supabase } from './lib/supabase';
 
@@ -41,6 +42,7 @@ function App() {
             <Route path="/formulas/:id" element={<Formulas />} />
             <Route path="/producao" element={<ProducaoList />} />
             <Route path="/producao/:id" element={<ProducaoEditor />} />
+            <Route path="/etiquetas" element={<Etiquetas />} />
             <Route path="/login" element={<Navigate to="/" />} />
             <Route path="/estoque" element={<Estoque />} />
           </Routes>
