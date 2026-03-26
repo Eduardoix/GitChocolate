@@ -9,9 +9,10 @@ const NutritionalLabel = ({
   validade = '',
   title = ''
 }) => {
-  console.log('NutritionalLabel rendering with:', { data, config });
   const {
     showTitle = false,
+    showLogo = false,
+    logoUrl = '',
     showQR = false,
     qrType = 'site',
     qrValue = '',
@@ -20,7 +21,7 @@ const NutritionalLabel = ({
     fontSize = 0.75,
     width = 300,
     showIngredients = true
-  } = config;
+  } = (config || {});
 
   const defaultData = {
     kcal: 0, carb: 0, sugarTotal: 0, sugarAdded: 0,
