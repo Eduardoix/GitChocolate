@@ -70,6 +70,7 @@ const Formulas = () => {
   const totalPerc = selectedItems.reduce((acc, curr) => acc + curr.perc, 0);
   const gTotal = selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.perc_gordura_total || 0) / 100), 0);
   const gLactea = selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.perc_gordura_lactea || 0) / 100), 0);
+  const totalCocoaFat = gTotal - gLactea;
   const totalCocoaPerc = selectedItems.reduce((acc, curr) => {
     const nome = (curr.nome || '').toLowerCase();
     if (nome.includes('cacau') || nome.includes('nibs') || nome.includes('liquor') || nome.includes('massa')) {
