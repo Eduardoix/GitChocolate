@@ -9,7 +9,8 @@ const NutritionalLabel = ({
   validade = '',
   title = '',
   portionSize = 25,
-  portionDescription = ''
+  portionDescription = '',
+  cocoaPerc = 0
 }) => {
   const {
     showTitle = false,
@@ -23,7 +24,8 @@ const NutritionalLabel = ({
     fontSize = 0.75,
     width = 50.8,
     height = 101.6,
-    showIngredients = true
+    showIngredients = true,
+    showCocoaPerc = true
   } = (config || {});
 
   const defaultData = {
@@ -78,6 +80,12 @@ const NutritionalLabel = ({
 
       {showTitle && title && (
         <div className="label-custom-title">{title}</div>
+      )}
+
+      {showCocoaPerc && cocoaPerc > 0 && (
+        <div className="label-cocoa-badge">
+          {Math.round(cocoaPerc)}% CACAU
+        </div>
       )}
 
       <div className="nutritional-label">
@@ -212,6 +220,13 @@ const NutritionalLabel = ({
           margin-bottom: 4px;
           text-transform: uppercase;
           border-bottom: 1px solid black;
+        }
+        .label-cocoa-badge {
+          font-weight: 900;
+          text-align: center;
+          font-size: 1.2em;
+          padding: 2px;
+          margin-bottom: 4px;
         }
         .label-logo-container {
           display: flex;

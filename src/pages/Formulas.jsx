@@ -70,7 +70,13 @@ const Formulas = () => {
   const totalPerc = selectedItems.reduce((acc, curr) => acc + curr.perc, 0);
   const gTotal = selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.perc_gordura_total || 0) / 100), 0);
   const gLactea = selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.perc_gordura_lactea || 0) / 100), 0);
-  const totalCocoaFat = gTotal - gLactea;
+  const totalCocoaPerc = selectedItems.reduce((acc, curr) => {
+    const nome = (curr.nome || '').toLowerCase();
+    if (nome.includes('cacau') || nome.includes('nibs') || nome.includes('liquor') || nome.includes('massa')) {
+      return acc + curr.perc;
+    }
+    return acc;
+  }, 0);
   
   const eutecticIndex = gTotal > 0 ? (gLactea / gTotal) * 100 : 0;
   const totalCostPerKg = selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.custo_unitario || 0) / 100), 0);
@@ -233,7 +239,20 @@ const Formulas = () => {
               </div>
               <h2 className="mt-2" style={{ textAlign: 'center' }}>{totalCocoaFat.toFixed(1)}%</h2>
               {totalCocoaFat < 30 && <p className="alert-box error mt-2">Abaixo do mínimo técnico (30%).</p>}
-              {totalCocoaFat >= 30 && <p className="alert-box success mt-2">Teor de cacau adequado.</p>}
+            </div>
+
+            <div className="card border-primary">
+              <h3>Cacau Total (Nibs+Liquor+Manteiga)</h3>
+              <div className="eutectic-gauge mt-2">
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ 
+                    width: `${totalCocoaPerc}%`, 
+                    backgroundColor: 'var(--primary)'
+                  }} />
+                </div>
+              </div>
+              <h2 className="mt-2" style={{ textAlign: 'center' }}>{totalCocoaPerc.toFixed(1)}%</h2>
+              <p className="alert-box success mt-2" style={{ backgroundColor: '#efebe9' }}>Referência comercial do chocolate.</p>
             </div>
           </div>
 

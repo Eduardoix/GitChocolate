@@ -29,12 +29,14 @@ const Etiquetas = () => {
     height: 101.6,
     portionSize: 25,
     portionDescription: '3 quadradinhos',
+    showCocoaPerc: true,
   });
 
   const [labelData, setLabelData] = useState({
     title: 'Chocolate Artesanal',
     lote: 'L001',
     validade: '25/12/2026',
+    cocoaPerc: 0,
     nutritional: {
       kcal: 0, carb: 0, sugarTotal: 0, sugarAdded: 0,
       protein: 0, fatTotal: 0, fatSat: 0, fatTrans: 0,
@@ -125,12 +127,21 @@ const Etiquetas = () => {
         perc: it.percentual
       }));
 
+      const cocoaPerc = items.reduce((acc, it) => {
+        const nome = (it.insumos.nome || '').toLowerCase();
+        if (nome.includes('cacau') || nome.includes('nibs') || nome.includes('liquor') || nome.includes('massa')) {
+          return acc + it.percentual;
+        }
+        return acc;
+      }, 0);
+
       setLabelData({
         ...labelData,
         title: item.nome || item.formulas?.nome,
         lote: item.lote || labelData.lote,
         nutritional: nutrition,
-        ingredients: ingredients
+        ingredients: ingredients,
+        cocoaPerc: cocoaPerc
       });
     }
     setLoading(false);
@@ -210,6 +221,14 @@ const Etiquetas = () => {
                     />
                   </div>
                 </div>
+                <div className="input-group mt-2">
+                  <label>Cacau Total (%)</label>
+                  <input 
+                    type="number" 
+                    value={labelData.cocoaPerc} 
+                    onChange={e => setLabelData({...labelData, cocoaPerc: parseFloat(e.target.value)})} 
+                  />
+                </div>
               </div>
             ) : (
               <div className="stock-selection mt-4">
@@ -286,6 +305,14 @@ const Etiquetas = () => {
                   onChange={e => setLabelConfig({...labelConfig, showIngredients: e.target.checked})} 
                 />
                 Exibir Ingredientes
+              </label>
+              <label className="toggle-item">
+                <input 
+                  type="checkbox" 
+                  checked={labelConfig.showCocoaPerc} 
+                  onChange={e => setLabelConfig({...labelConfig, showCocoaPerc: e.target.checked})} 
+                />
+                Exibir Destaque % Cacau
               </label>
             </div>
 
@@ -392,6 +419,7 @@ const Etiquetas = () => {
                 validade={labelData.validade}
                 portionSize={labelConfig.portionSize}
                 portionDescription={labelConfig.portionDescription}
+                cocoaPerc={labelData.cocoaPerc}
               />
             </div>
           </div>
