@@ -22,7 +22,7 @@ const NutritionalLabel = ({
     showLote = false,
     showValidade = false,
     fontSize = 0.75,
-    width = 50.8,
+    width = 65,
     height = 101.6,
     showIngredients = true,
     showCocoaPerc = true
@@ -92,82 +92,81 @@ const NutritionalLabel = ({
         <div className="label-header">INFORMAÇÃO NUTRICIONAL</div>
         <div className="label-subheader">Porções por embalagem: Variável</div>
         <div className="label-subheader">Porção: {portionSize}g {portionDescription ? `(${portionDescription})` : ''}</div>
-        
-        <table className="nutrition-table">
+          <table className="nutrition-table">
           <thead>
             <tr>
-              <th style={{ textAlign: 'left' }}></th>
-              <th>100g</th>
-              <th>{portionSize}g</th>
-              <th>%VD*</th>
+              <th className="col-label"></th>
+              <th className="col-val">100g</th>
+              <th className="col-val">{portionSize}g</th>
+              <th className="col-vd">%VD*</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Valor energético (kcal)</td>
-              <td>{d.kcal}</td>
-              <td>{p.kcal}</td>
-              <td>{getVD(p.kcal, 2000)}</td>
+              <td className="col-label">Valor energético (kcal)</td>
+              <td className="col-val">{d.kcal}</td>
+              <td className="col-val">{p.kcal}</td>
+              <td className="col-vd">{getVD(p.kcal, 2000)}</td>
             </tr>
             <tr>
-              <td>Valor energético (kJ)</td>
-              <td>{p.kj100g}</td>
-              <td>{p.kj}</td>
-              <td>{getVD(p.kcal, 2000)}</td>
+              <td className="col-label">Valor energético (kJ)</td>
+              <td className="col-val">{p.kj100g}</td>
+              <td className="col-val">{p.kj}</td>
+              <td className="col-vd">{getVD(p.kcal, 2000)}</td>
             </tr>
             <tr>
-              <td>Carboidratos (g)</td>
-              <td>{d.carb}</td>
-              <td>{p.carb}</td>
-              <td>{getVD(p.carb, 300)}</td>
+              <td className="col-label">Carboidratos (g)</td>
+              <td className="col-val">{d.carb}</td>
+              <td className="col-val">{p.carb}</td>
+              <td className="col-vd">{getVD(p.carb, 300)}</td>
             </tr>
             <tr className="indent">
-              <td>Açúcares totais (g)</td>
-              <td>{d.sugarTotal}</td>
-              <td>{p.sugarTotal}</td>
-              <td>-</td>
+              <td className="col-label">Açúcares totais (g)</td>
+              <td className="col-val">{d.sugarTotal}</td>
+              <td className="col-val">{p.sugarTotal}</td>
+              <td className="col-vd">-</td>
             </tr>
             <tr className="indent">
-              <td>Açúcares adicionados (g)</td>
-              <td>{d.sugarAdded}</td>
-              <td>{p.sugarAdded}</td>
-              <td>{getVD(p.sugarAdded, 50)}</td>
+              <td className="col-label">Açúcares adicionados (g)</td>
+              <td className="col-val">{d.sugarAdded}</td>
+              <td className="col-val">{p.sugarAdded}</td>
+              <td className="col-vd">{getVD(p.sugarAdded, 50)}</td>
             </tr>
             <tr>
-              <td>Proteínas (g)</td>
-              <td>{d.protein}</td>
-              <td>{p.protein}</td>
-              <td>{getVD(p.protein, 50)}</td>
+              <td className="col-label">Proteínas (g)</td>
+              <td className="col-val">{d.protein}</td>
+              <td className="col-val">{p.protein}</td>
+              <td className="col-vd">{getVD(p.protein, 50)}</td>
             </tr>
             <tr>
-              <td>Gorduras totais (g)</td>
-              <td>{d.fatTotal}</td>
-              <td>{p.fatTotal}</td>
-              <td>{getVD(p.fatTotal, 55)}</td>
+              <td className="col-label">Gorduras totais (g)</td>
+              <td className="col-val">{d.fatTotal}</td>
+              <td className="col-val">{p.fatTotal}</td>
+              <td className="col-vd">{getVD(p.fatTotal, 55)}</td>
             </tr>
             <tr className="indent">
-              <td>Gorduras saturadas (g)</td>
-              <td>{d.fatSat}</td>
-              <td>{p.fatSat}</td>
-              <td>{getVD(p.fatSat, 22)}</td>
+              <td className="col-label">Gorduras saturadas (g)</td>
+              <td className="col-val">{d.fatSat}</td>
+              <td className="col-val">{p.fatSat}</td>
+              <td className="col-vd">{getVD(p.fatSat, 19)}</td>
             </tr>
             <tr className="indent">
-              <td>Gorduras trans (g)</td>
-              <td>{d.fatTrans}</td>
-              <td>{p.fatTrans}</td>
-              <td>-</td>
+              <td className="col-label">Gorduras trans (g)</td>
+              <td className="col-val">{d.fatTrans}</td>
+              <td className="col-val">{p.fatTrans}</td>
+              <td className="col-vd">-</td>
             </tr>
             <tr>
-              <td>Fibras alimentares (g)</td>
-              <td>{d.fiber}</td>
-              <td>{p.fiber}</td>
-              <td>{getVD(p.fiber, 25)}</td>
+              <td className="col-label">Fibras alimentares (g)</td>
+              <td className="col-val">{d.fiber}</td>
+              <td className="col-val">{p.fiber}</td>
+              <td className="col-vd">{getVD(p.fiber, 25)}</td>
             </tr>
             <tr>
-              <td>Sódio (mg)</td>
-              <td>{d.sodium}</td>
-              <td>{p.sodium}</td>
-              <td>{getVD(p.sodium, 2000)}</td>
+              <td className="col-label">Sódio (mg)</td>
+              <td className="col-val">{d.sodium}</td>
+              <td className="col-val">{p.sodium}</td>
+              <td className="col-vd">{getVD(p.sodium, 2000)}</td>
             </tr>
           </tbody>
         </table>
@@ -258,16 +257,26 @@ const NutritionalLabel = ({
         .nutrition-table {
           width: 100%;
           border-collapse: collapse;
+          table-layout: fixed;
+          margin-bottom: 2px;
         }
         .nutrition-table th {
-          text-align: right;
           border-bottom: 1px solid black;
-          font-size: 0.85em;
+          font-size: 0.8em;
+          padding: 2px 0;
         }
+        .nutrition-table .col-label { width: 45%; text-align: left; }
+        .nutrition-table .col-val { width: 20%; text-align: right; white-space: nowrap; }
+        .nutrition-table .col-vd { width: 15%; text-align: right; white-space: nowrap; }
+        
         .nutrition-table td {
-          padding: 1px 0;
-          border-bottom: 1px solid #eee;
-          line-height: 1.1;
+          padding: 2px 0;
+          border-bottom: 1px solid #ddd;
+          font-size: 0.85em;
+          vertical-align: bottom;
+        }
+        .nutrition-table .col-val, .nutrition-table .col-vd {
+          padding-right: 4px;
         }
         .indent td:first-child {
           padding-left: 8px;

@@ -25,7 +25,7 @@ const Etiquetas = () => {
     showValidade: true,
     showIngredients: true,
     fontSize: 0.75,
-    width: 50.8,
+    width: 65,
     height: 101.6,
     portionSize: 25,
     portionDescription: '3 quadradinhos',
