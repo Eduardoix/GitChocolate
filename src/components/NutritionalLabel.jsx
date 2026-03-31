@@ -23,7 +23,7 @@ const NutritionalLabel = ({
     showValidade = false,
     fontSize = 0.75,
     width = 65,
-    height = 101.6,
+    height = 120,
     showIngredients = true,
     showCocoaPerc = true
   } = (config || {});
@@ -69,7 +69,7 @@ const NutritionalLabel = ({
         width: `${width}mm`, 
         height: height ? `${height}mm` : 'auto',
         fontSize: `${fontSize}rem`,
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
     >
       {showLogo && config.logoUrl && (
@@ -265,9 +265,9 @@ const NutritionalLabel = ({
           font-size: 0.8em;
           padding: 2px 0;
         }
-        .nutrition-table .col-label { width: 45%; text-align: left; }
-        .nutrition-table .col-val { width: 20%; text-align: right; white-space: nowrap; }
-        .nutrition-table .col-vd { width: 15%; text-align: right; white-space: nowrap; }
+        .nutrition-table .col-label { width: 50%; text-align: left; }
+        .nutrition-table .col-val { width: 18%; text-align: right; white-space: nowrap; }
+        .nutrition-table .col-vd { width: 14%; text-align: right; white-space: nowrap; }
         
         .nutrition-table td {
           padding: 2px 0;
