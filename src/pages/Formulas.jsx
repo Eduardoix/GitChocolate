@@ -14,6 +14,13 @@ const Formulas = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [vendaEstimada, setVendaEstimada] = useState(0);
 
+  // Rótulo options
+  const [porcoesEmbalagem, setPorcoesEmbalagem] = useState('10');
+  const [porcaoG, setPorcaoG] = useState(100);
+  const [porcaoDesc, setPorcaoDesc] = useState('1/2 Tablete');
+  const [contemLactose, setContemLactose] = useState(true);
+  const [contemGluten, setContemGluten] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       // Fetch Insumos
@@ -26,6 +33,11 @@ const Formulas = () => {
         if (formula) {
           setNome(formula.nome);
           setDescricao(formula.descricao || '');
+          setPorcoesEmbalagem(formula.porcoes_embalagem || '10');
+          setPorcaoG(formula.porcao_g || 100);
+          setPorcaoDesc(formula.porcao_desc || '1/2 Tablete');
+          setContemLactose(formula.contem_lactose ?? true);
+          setContemGluten(formula.contem_gluten ?? false);
           const { data: items } = await supabase.from('formula_itens').select('*, insumos(*)').eq('formula_id', id);
           if (items) {
             setSelectedItems(items.map(it => ({
@@ -83,15 +95,15 @@ const Formulas = () => {
   const totalCostPerKg = selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.custo_unitario || 0) / 100), 0);
   
   const nutrition = {
-    kcal: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.kcal_100g || 0) / 100), 0)),
+    kcal: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.valor_energetico_kcal || 0) / 100), 0)),
     carb: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.carboidratos_g || 0) / 100), 0)),
-    sugarTotal: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.acucares_totais_g || 0) / 100), 0)),
-    sugarAdded: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.acucares_adicionados_g || 0) / 100), 0)),
-    protein: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.proteinas_g || 0) / 100), 0)),
-    fatTotal: Math.round(gTotal),
+    sugarTotal: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.acucar_total_g || 0) / 100), 0)),
+    sugarAdded: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.acucar_adicionado_g || 0) / 100), 0)),
+    protein: Number(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.proteinas_g || 0) / 100), 0).toFixed(1)),
+    fatTotal: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.gorduras_totais_g || 0) / 100), 0)),
     fatSat: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.gorduras_saturadas_g || 0) / 100), 0)),
-    fatTrans: 0,
-    fiber: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.fibras_g || 0) / 100), 0)),
+    fatTrans: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.gorduras_trans_g || 0) / 100), 0)),
+    fiber: Number(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.fibra_alimentar_g || 0) / 100), 0).toFixed(1)),
     sodium: Math.round(selectedItems.reduce((acc, curr) => acc + (curr.perc * Number(curr.sodio_mg || 0) / 100), 0)),
   };
 
@@ -105,7 +117,15 @@ const Formulas = () => {
       // Update existing formula metadata
       const { error } = await supabase
         .from('formulas')
-        .update({ nome, descricao })
+        .update({ 
+          nome, 
+          descricao,
+          porcoes_embalagem: porcoesEmbalagem,
+          porcao_g: porcaoG,
+          porcao_desc: porcaoDesc,
+          contem_lactose: contemLactose,
+          contem_gluten: contemGluten
+        })
         .eq('id', id);
       
       if (error) return alert('Erro ao atualizar fórmula');
@@ -117,7 +137,15 @@ const Formulas = () => {
       // Create new formula
       const { data: formula, error } = await supabase
         .from('formulas')
-        .insert([{ nome, descricao }])
+        .insert([{ 
+          nome, 
+          descricao,
+          porcoes_embalagem: porcoesEmbalagem,
+          porcao_g: porcaoG,
+          porcao_desc: porcaoDesc,
+          contem_lactose: contemLactose,
+          contem_gluten: contemGluten
+        }])
         .select()
         .single();
       
@@ -156,9 +184,33 @@ const Formulas = () => {
       </div>
 
       <div className="card flex-column gap-2 mb-3">
-        <div className="input-group">
-          <label>Nome da Fórmula</label>
-          <input type="text" placeholder="Ex: Chocolate 70% Dark" value={nome} onChange={e => setNome(e.target.value)} />
+        <div className="flex gap-3">
+          <div className="input-group flex-1">
+            <label>Nome da Fórmula</label>
+            <input type="text" placeholder="Ex: Chocolate 70% Dark" value={nome} onChange={e => setNome(e.target.value)} />
+          </div>
+          <div className="input-group" style={{ width: '150px' }}>
+            <label>Porções/Embalagem</label>
+            <input type="text" placeholder="Ex: 10" value={porcoesEmbalagem} onChange={e => setPorcoesEmbalagem(e.target.value)} />
+          </div>
+          <div className="input-group" style={{ width: '120px' }}>
+            <label>Porção (g)</label>
+            <input type="number" value={porcaoG} onChange={e => setPorcaoG(Number(e.target.value))} />
+          </div>
+          <div className="input-group" style={{ width: '180px' }}>
+            <label>Descrição Porção</label>
+            <input type="text" placeholder="Ex: 1/2 Tablete" value={porcaoDesc} onChange={e => setPorcaoDesc(e.target.value)} />
+          </div>
+        </div>
+        <div className="flex gap-4 mt-2">
+          <label className="flex items-center gap-2" style={{ cursor: 'pointer' }}>
+            <input type="checkbox" checked={contemLactose} onChange={e => setContemLactose(e.target.checked)} />
+            <span>Contém Lactose</span>
+          </label>
+          <label className="flex items-center gap-2" style={{ cursor: 'pointer' }}>
+            <input type="checkbox" checked={contemGluten} onChange={e => setContemGluten(e.target.checked)} />
+            <span>Contém Glúten</span>
+          </label>
         </div>
       </div>
 
@@ -205,8 +257,18 @@ const Formulas = () => {
 
           <div className="mt-4 flex-column items-center">
             <h3>Rótulo Nutricional</h3>
-            <div className="bg-cream p-4 rounded mt-2">
-              <NutritionalLabel data={nutrition} ingredients={selectedItems} />
+            <div className="bg-cream p-4 rounded mt-2" style={{ width: 'fit-content' }}>
+              <NutritionalLabel 
+                data={nutrition} 
+                ingredients={selectedItems} 
+                title={nome}
+                portionSize={porcaoG}
+                portionDescription={porcaoDesc}
+                servingsPerContainer={porcoesEmbalagem}
+                containsLactose={contemLactose}
+                containsGluten={contemGluten}
+                config={{ showTitle: true, showIngredients: true, showCocoaPerc: false }} 
+              />
             </div>
           </div>
         </div>

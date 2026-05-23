@@ -8,12 +8,15 @@ const NutritionalLabel = ({
   lote = '',
   validade = '',
   title = '',
-  portionSize = 25,
+  portionSize = 100,
   portionDescription = '',
+  servingsPerContainer = '10',
+  containsLactose = true,
+  containsGluten = false,
   cocoaPerc = 0
 }) => {
   const {
-    showTitle = false,
+    showTitle = true,
     showLogo = false,
     logoUrl = '',
     showQR = false,
@@ -21,11 +24,9 @@ const NutritionalLabel = ({
     qrValue = '',
     showLote = false,
     showValidade = false,
-    fontSize = 0.75,
-    width = 65,
-    height = 120,
-    showIngredients = true,
-    showCocoaPerc = true
+    fontSize = 0.8,
+    width = 75,
+    showIngredients = true
   } = (config || {});
 
   const defaultData = {
@@ -36,282 +37,292 @@ const NutritionalLabel = ({
 
   const d = { ...defaultData, ...(data || {}) };
   
-  // Calculate portion values (based on d which is 100g)
+  // d values are per 100g
+  // Calculate portion values
   const factor = portionSize / 100;
   const p = {
     kcal: (d.kcal * factor).toFixed(0),
-    kj: (d.kcal * 4.2 * factor).toFixed(0),
-    carb: (d.carb * factor).toFixed(1),
-    sugarTotal: (d.sugarTotal * factor).toFixed(1),
-    sugarAdded: (d.sugarAdded * factor).toFixed(1),
-    protein: (d.protein * factor).toFixed(1),
-    fatTotal: (d.fatTotal * factor).toFixed(1),
-    fatSat: (d.fatSat * factor).toFixed(1),
-    fatTrans: (d.fatTrans * factor).toFixed(1),
-    fiber: (d.fiber * factor).toFixed(1),
+    carb: (d.carb * factor).toFixed(1).replace('.', ','),
+    sugarTotal: (d.sugarTotal * factor).toFixed(1).replace('.', ','),
+    sugarAdded: (d.sugarAdded * factor).toFixed(1).replace('.', ','),
+    protein: (d.protein * factor).toFixed(1).replace('.', ','),
+    fatTotal: (d.fatTotal * factor).toFixed(1).replace('.', ','),
+    fatSat: (d.fatSat * factor).toFixed(1).replace('.', ','),
+    fatTrans: (d.fatTrans * factor).toFixed(1).replace('.', ','),
+    fiber: (d.fiber * factor).toFixed(1).replace('.', ','),
     sodium: (d.sodium * factor).toFixed(0),
-    kj100g: (d.kcal * 4.2).toFixed(0)
   };
+
+  // Replace ,0 with empty if you want, but ANVISA usually accepts it.
+  const formatNum = (str) => str.endsWith(',0') ? str.replace(',0', '') : str;
+
+  // Lupa logic (Front-of-pack warning)
+  const isHighFatSat = d.fatSat >= 6;
+  const isHighSugarAdded = d.sugarAdded >= 15;
+  const isHighSodium = d.sodium >= 600;
+
+  const highAttributes = [];
+  if (isHighSugarAdded) highAttributes.push('AÇÚCAR ADICIONADO');
+  if (isHighFatSat) highAttributes.push('GORDURA SATURADA');
+  if (isHighSodium) highAttributes.push('SÓDIO');
 
   // Sort ingredients by percentage descending
   const sortedIngredients = [...ingredients].sort((a, b) => b.perc - a.perc);
   const ingredientsString = sortedIngredients.map(i => i.nome).join(', ');
 
   const getVD = (val, ref) => {
-    const vd = Math.round((val / ref) * 100);
-    return vd > 0 ? `${vd}%` : '0%';
+    if (!val) return '0';
+    const numVal = parseFloat(val.replace(',', '.'));
+    const vd = Math.round((numVal / ref) * 100);
+    return vd;
   };
 
   return (
     <div 
       className="nutritional-label-container" 
       style={{ 
-        width: `${width}mm`, 
-        height: height ? `${height}mm` : 'auto',
+        width: width ? `${width}mm` : '300px', 
         fontSize: `${fontSize}rem`,
-        overflow: 'visible'
       }}
     >
-      {showLogo && config.logoUrl && (
-        <div className="label-logo-container">
-          <img src={config.logoUrl} alt="Logo" className="label-logo" />
-        </div>
-      )}
-
       {showTitle && title && (
         <div className="label-custom-title">{title}</div>
       )}
 
-      {showCocoaPerc && cocoaPerc > 0 && (
-        <div className="label-cocoa-badge">
-          {Math.round(cocoaPerc)}% CACAU
+      {highAttributes.length > 0 && (
+        <div className="lupa-container">
+          <div className="lupa-box">
+            <div className="lupa-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <div className="lupa-text">
+              <span className="alto-em">ALTO EM</span>
+              <div className="lupa-items">
+                {highAttributes.map((attr, idx) => (
+                  <span key={idx} className="lupa-item">{attr}</span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
       <div className="nutritional-label">
         <div className="label-header">INFORMAÇÃO NUTRICIONAL</div>
-        <div className="label-subheader">Porções por embalagem: Variável</div>
-        <div className="label-subheader">Porção: {portionSize}g {portionDescription ? `(${portionDescription})` : ''}</div>
-          <table className="nutrition-table">
+        
+        <div className="label-portions">
+          <div>Porções por embalagem: {servingsPerContainer}</div>
+          <div>Porção: {portionSize}g {portionDescription ? `(${portionDescription})` : ''}</div>
+        </div>
+        
+        <table className="nutrition-table">
           <thead>
-            <tr>
+            <tr className="header-row">
               <th className="col-label"></th>
               <th className="col-val">100g</th>
-              <th className="col-val">{portionSize}g</th>
               <th className="col-vd">%VD*</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className="col-label">Valor energético (kcal)</td>
-              <td className="col-val">{d.kcal}</td>
-              <td className="col-val">{p.kcal}</td>
-              <td className="col-vd">{getVD(p.kcal, 2000)}</td>
-            </tr>
-            <tr>
-              <td className="col-label">Valor energético (kJ)</td>
-              <td className="col-val">{p.kj100g}</td>
-              <td className="col-val">{p.kj}</td>
+              <td className="col-val">{formatNum(p.kcal)}</td>
               <td className="col-vd">{getVD(p.kcal, 2000)}</td>
             </tr>
             <tr>
               <td className="col-label">Carboidratos (g)</td>
-              <td className="col-val">{d.carb}</td>
-              <td className="col-val">{p.carb}</td>
+              <td className="col-val">{formatNum(p.carb)}</td>
               <td className="col-vd">{getVD(p.carb, 300)}</td>
             </tr>
             <tr className="indent">
               <td className="col-label">Açúcares totais (g)</td>
-              <td className="col-val">{d.sugarTotal}</td>
-              <td className="col-val">{p.sugarTotal}</td>
-              <td className="col-vd">-</td>
+              <td className="col-val">{formatNum(p.sugarTotal)}</td>
+              <td className="col-vd"></td>
             </tr>
             <tr className="indent">
               <td className="col-label">Açúcares adicionados (g)</td>
-              <td className="col-val">{d.sugarAdded}</td>
-              <td className="col-val">{p.sugarAdded}</td>
+              <td className="col-val">{formatNum(p.sugarAdded)}</td>
               <td className="col-vd">{getVD(p.sugarAdded, 50)}</td>
             </tr>
             <tr>
               <td className="col-label">Proteínas (g)</td>
-              <td className="col-val">{d.protein}</td>
-              <td className="col-val">{p.protein}</td>
+              <td className="col-val">{formatNum(p.protein)}</td>
               <td className="col-vd">{getVD(p.protein, 50)}</td>
             </tr>
             <tr>
               <td className="col-label">Gorduras totais (g)</td>
-              <td className="col-val">{d.fatTotal}</td>
-              <td className="col-val">{p.fatTotal}</td>
-              <td className="col-vd">{getVD(p.fatTotal, 55)}</td>
+              <td className="col-val">{formatNum(p.fatTotal)}</td>
+              <td className="col-vd">{getVD(p.fatTotal, 65)}</td>
             </tr>
             <tr className="indent">
               <td className="col-label">Gorduras saturadas (g)</td>
-              <td className="col-val">{d.fatSat}</td>
-              <td className="col-val">{p.fatSat}</td>
-              <td className="col-vd">{getVD(p.fatSat, 19)}</td>
+              <td className="col-val">{formatNum(p.fatSat)}</td>
+              <td className="col-vd">{getVD(p.fatSat, 20)}</td>
             </tr>
             <tr className="indent">
               <td className="col-label">Gorduras trans (g)</td>
-              <td className="col-val">{d.fatTrans}</td>
-              <td className="col-val">{p.fatTrans}</td>
-              <td className="col-vd">-</td>
+              <td className="col-val">{formatNum(p.fatTrans)}</td>
+              <td className="col-vd"></td>
             </tr>
             <tr>
               <td className="col-label">Fibras alimentares (g)</td>
-              <td className="col-val">{d.fiber}</td>
-              <td className="col-val">{p.fiber}</td>
+              <td className="col-val">{formatNum(p.fiber)}</td>
               <td className="col-vd">{getVD(p.fiber, 25)}</td>
             </tr>
             <tr>
               <td className="col-label">Sódio (mg)</td>
-              <td className="col-val">{d.sodium}</td>
-              <td className="col-val">{p.sodium}</td>
+              <td className="col-val">{formatNum(p.sodium)}</td>
               <td className="col-vd">{getVD(p.sodium, 2000)}</td>
             </tr>
           </tbody>
         </table>
         
         <div className="label-footer">
-          * Percentual de valores diários fornecidos pela porção.
+          *Percentual de valores diários fornecidos pela porção.
         </div>
+      </div>
 
-        {showIngredients && ingredients.length > 0 && (
-          <div className="ingredients-section mt-1">
-            <strong>Ingredientes:</strong> {ingredientsString}.
-          </div>
+      <div className="ingredients-section mt-1">
+        <div><strong>INGREDIENTES:</strong> {ingredientsString}.</div>
+        {contemLactose && (
+          <div className="allergen-alert"><strong>CONTÉM LACTOSE</strong></div>
+        )}
+        {!contemLactose && (
+          <div className="allergen-alert"><strong>NÃO CONTÉM LACTOSE</strong></div>
+        )}
+        {contemGluten && (
+          <div className="allergen-alert"><strong>CONTÉM GLÚTEN</strong></div>
+        )}
+        {!contemGluten && (
+          <div className="allergen-alert"><strong>NÃO CONTÉM GLÚTEN</strong></div>
         )}
       </div>
-
-      <div className="label-extra-info">
-        <div className="flex justify-between items-end gap-2">
-          <div className="flex-column gap-1">
-            {showLote && lote && (
-              <div className="extra-field"><strong>LOTE:</strong> {lote}</div>
-            )}
-            {showValidade && validade && (
-              <div className="extra-field"><strong>VAL:</strong> {validade}</div>
-            )}
-          </div>
-          
-          {showQR && qrValue && (
-            <div className="qr-container">
-              <QRCodeSVG value={qrValue} size={48} />
-              <div style={{ fontSize: '0.5rem', textAlign: 'center', marginTop: '2px' }}>
-                {qrType === 'instagram' ? '@insta' : 'website'}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
 
       <style dangerouslySetInnerHTML={{ __html: `
         .nutritional-label-container {
           background: white;
           color: black;
-          font-family: 'Inter', sans-serif;
+          font-family: Arial, Helvetica, sans-serif;
           display: flex;
           flex-direction: column;
         }
         .label-custom-title {
           font-weight: 800;
+          font-size: 1.4em;
           text-align: center;
-          margin-bottom: 4px;
+          margin-bottom: 12px;
           text-transform: uppercase;
-          border-bottom: 1px solid black;
         }
-        .label-cocoa-badge {
-          font-weight: 900;
-          text-align: center;
-          font-size: 1.2em;
-          padding: 2px;
-          margin-bottom: 4px;
-        }
-        .label-logo-container {
+        .lupa-container {
           display: flex;
           justify-content: center;
-          margin-bottom: 8px;
+          margin-bottom: 16px;
         }
-        .label-logo {
-          max-height: 50px;
-          max-width: 100%;
-          object-fit: contain;
+        .lupa-box {
+          border: 2px solid black;
+          border-radius: 6px;
+          padding: 6px 10px;
+          display: flex;
+          align-items: stretch;
+          gap: 12px;
+          background: white;
+        }
+        .lupa-icon {
+          width: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .lupa-text {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .alto-em {
+          font-weight: 800;
+          font-size: 1em;
+          line-height: 1;
+          margin-bottom: 2px;
+        }
+        .lupa-items {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+        }
+        .lupa-item {
+          font-weight: 900;
+          font-size: 0.9em;
+          background: black;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          line-height: 1;
+          text-align: center;
         }
         .nutritional-label {
           border: 1px solid black;
-          padding: 6px;
+          padding: 10px;
         }
         .label-header {
           font-weight: 900;
           font-size: 1.1em;
           border-bottom: 3px solid black;
-          padding-bottom: 1px;
-          margin-bottom: 2px;
+          padding-bottom: 4px;
+          margin-bottom: 6px;
+          text-align: center;
         }
-        .label-subheader {
-          font-weight: 600;
-          border-bottom: 1px solid black;
-          padding: 1px 0;
+        .label-portions {
           font-size: 0.9em;
+          margin-bottom: 8px;
         }
         .nutrition-table {
           width: 100%;
           border-collapse: collapse;
           table-layout: fixed;
-          margin-bottom: 2px;
+          margin-bottom: 4px;
         }
-        .nutrition-table th {
+        .header-row th {
+          border-top: 3px solid black;
           border-bottom: 1px solid black;
-          font-size: 0.8em;
-          padding: 2px 0;
+          font-size: 0.85em;
+          padding: 6px 0;
+          font-weight: bold;
         }
-        .nutrition-table .col-label { width: 50%; text-align: left; }
-        .nutrition-table .col-val { width: 18%; text-align: right; white-space: nowrap; }
-        .nutrition-table .col-vd { width: 14%; text-align: right; white-space: nowrap; }
+        .nutrition-table .col-label { width: 55%; text-align: left; }
+        .nutrition-table .col-val { width: 25%; text-align: center; white-space: nowrap; }
+        .nutrition-table .col-vd { width: 20%; text-align: center; white-space: nowrap; }
         
         .nutrition-table td {
-          padding: 2px 0;
-          border-bottom: 1px solid #ddd;
+          padding: 4px 0;
+          border-bottom: 1px solid black;
           font-size: 0.85em;
           vertical-align: bottom;
         }
-        .nutrition-table .col-val, .nutrition-table .col-vd {
-          padding-right: 4px;
+        .nutrition-table tr:last-child td {
+          border-bottom: 3px solid black;
         }
         .indent td:first-child {
-          padding-left: 8px;
+          padding-left: 12px;
         }
         .label-footer {
-          font-size: 0.8em;
-          margin-top: 4px;
+          font-size: 0.75em;
+          margin-top: 6px;
         }
         .ingredients-section {
-          font-size: 0.85em;
-          line-height: 1.2;
-          margin-top: 4px;
-          border-top: 1px solid black;
-          padding-top: 2px;
-        }
-        .label-extra-info {
-          margin-top: 4px;
-          padding: 4px;
-          border: 1px dashed #ccc;
-        }
-        .extra-field {
           font-size: 0.9em;
+          line-height: 1.5;
+          margin-top: 12px;
         }
-        .qr-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .allergen-alert {
+          margin-top: 4px;
+          font-size: 1.1em;
         }
-        .mt-1 { margin-top: 0.25rem; }
-        .flex { display: flex; }
-        .flex-column { display: flex; flex-direction: column; }
-        .justify-between { justify-content: space-between; }
-        .items-end { align-items: flex-end; }
-        .gap-1 { gap: 4px; }
-        .gap-2 { gap: 8px; }
+        .mt-1 { margin-top: 0.5rem; }
       `}} />
     </div>
   );
