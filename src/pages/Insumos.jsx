@@ -9,7 +9,11 @@ const Insumos = () => {
   const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
     nome: '', unidade: 'kg', custo_unitario: 0,
-    perc_gordura_total: 0, perc_gordura_lactea: 0, perc_manteiga_cacau: 0
+    perc_gordura_total: 0, perc_gordura_lactea: 0, perc_manteiga_cacau: 0,
+    modo_preparo: '', valor_energetico_kcal: 0, carboidratos_g: 0,
+    acucar_total_g: 0, acucar_adicionado_g: 0, proteinas_g: 0,
+    gorduras_totais_g: 0, gorduras_saturadas_g: 0, gorduras_trans_g: 0,
+    fibra_alimentar_g: 0, sodio_mg: 0
   });
 
   const fetchInsumos = async () => {
@@ -51,7 +55,18 @@ const Insumos = () => {
       custo_unitario: insumo.custo_unitario,
       perc_gordura_total: insumo.perc_gordura_total,
       perc_gordura_lactea: insumo.perc_gordura_lactea,
-      perc_manteiga_cacau: insumo.perc_manteiga_cacau
+      perc_manteiga_cacau: insumo.perc_manteiga_cacau,
+      modo_preparo: insumo.modo_preparo || '',
+      valor_energetico_kcal: insumo.valor_energetico_kcal || 0,
+      carboidratos_g: insumo.carboidratos_g || 0,
+      acucar_total_g: insumo.acucar_total_g || 0,
+      acucar_adicionado_g: insumo.acucar_adicionado_g || 0,
+      proteinas_g: insumo.proteinas_g || 0,
+      gorduras_totais_g: insumo.gorduras_totais_g || 0,
+      gorduras_saturadas_g: insumo.gorduras_saturadas_g || 0,
+      gorduras_trans_g: insumo.gorduras_trans_g || 0,
+      fibra_alimentar_g: insumo.fibra_alimentar_g || 0,
+      sodio_mg: insumo.sodio_mg || 0
     });
     setShowModal(true);
   };
@@ -59,7 +74,13 @@ const Insumos = () => {
   const closeModal = () => {
     setShowModal(false);
     setEditId(null);
-    setFormData({ nome: '', unidade: 'kg', custo_unitario: 0, perc_gordura_total: 0, perc_gordura_lactea: 0, perc_manteiga_cacau: 0 });
+    setFormData({ 
+      nome: '', unidade: 'kg', custo_unitario: 0, perc_gordura_total: 0, perc_gordura_lactea: 0, perc_manteiga_cacau: 0,
+      modo_preparo: '', valor_energetico_kcal: 0, carboidratos_g: 0,
+      acucar_total_g: 0, acucar_adicionado_g: 0, proteinas_g: 0,
+      gorduras_totais_g: 0, gorduras_saturadas_g: 0, gorduras_trans_g: 0,
+      fibra_alimentar_g: 0, sodio_mg: 0 
+    });
   };
 
   const handleDelete = async (id) => {
@@ -132,6 +153,71 @@ const Insumos = () => {
                 <label>Nome</label>
                 <input required type="text" value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
               </div>
+
+              <div className="input-group mt-2">
+                <label>Modo de preparo / marca (opcional)</label>
+                <textarea 
+                  value={formData.modo_preparo} 
+                  onChange={e => setFormData({...formData, modo_preparo: e.target.value})} 
+                  placeholder="Ex: Assado, frito, cozido ou Marca Exemplo"
+                  rows={2}
+                  style={{ width: '100%', resize: 'vertical' }}
+                />
+                <small className="text-muted" style={{ fontSize: '0.8rem' }}>Esta informação é apenas para seu controle e não aparecerá na tabela nutricional.</small>
+              </div>
+
+              <div className="nutritional-box" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', padding: '16px', marginTop: '16px', marginBottom: '16px' }}>
+                <h4 className="flex items-center gap-2 mb-3" style={{ color: '#d35400', fontSize: '1.05rem', margin: '0 0 16px 0' }}>
+                  <span role="img" aria-label="calculator">🧮</span> Insira os valores referente a porção padrão de 100g/100ml
+                </h4>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div className="input-group">
+                    <label>Valor Energético (kcal)</label>
+                    <input type="number" value={formData.valor_energetico_kcal} onChange={e => setFormData({...formData, valor_energetico_kcal: Number(e.target.value)})} />
+                  </div>
+                  <div className="input-group">
+                    <label>Carboidratos (g)</label>
+                    <input type="number" value={formData.carboidratos_g} onChange={e => setFormData({...formData, carboidratos_g: Number(e.target.value)})} />
+                  </div>
+                  
+                  <div className="input-group">
+                    <label>Açúcar Total (g)</label>
+                    <input type="number" value={formData.acucar_total_g} onChange={e => setFormData({...formData, acucar_total_g: Number(e.target.value)})} />
+                  </div>
+                  <div className="input-group">
+                    <label>Açúcar Adicionado (g)</label>
+                    <input type="number" value={formData.acucar_adicionado_g} onChange={e => setFormData({...formData, acucar_adicionado_g: Number(e.target.value)})} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Proteínas (g)</label>
+                    <input type="number" value={formData.proteinas_g} onChange={e => setFormData({...formData, proteinas_g: Number(e.target.value)})} />
+                  </div>
+                  <div className="input-group">
+                    <label>Gorduras Totais (g)</label>
+                    <input type="number" value={formData.gorduras_totais_g} onChange={e => setFormData({...formData, gorduras_totais_g: Number(e.target.value)})} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Gorduras Saturadas (g)</label>
+                    <input type="number" value={formData.gorduras_saturadas_g} onChange={e => setFormData({...formData, gorduras_saturadas_g: Number(e.target.value)})} />
+                  </div>
+                  <div className="input-group">
+                    <label>Gorduras Trans (g)</label>
+                    <input type="number" value={formData.gorduras_trans_g} onChange={e => setFormData({...formData, gorduras_trans_g: Number(e.target.value)})} />
+                  </div>
+
+                  <div className="input-group">
+                    <label>Fibra Alimentar (g)</label>
+                    <input type="number" value={formData.fibra_alimentar_g} onChange={e => setFormData({...formData, fibra_alimentar_g: Number(e.target.value)})} />
+                  </div>
+                  <div className="input-group">
+                    <label>Sódio (mg)</label>
+                    <input type="number" value={formData.sodio_mg} onChange={e => setFormData({...formData, sodio_mg: Number(e.target.value)})} />
+                  </div>
+                </div>
+              </div>
               <div className="flex gap-2">
                 <div className="input-group flex-1">
                   <label>Unidade</label>
@@ -174,7 +260,7 @@ const Insumos = () => {
           z-index: 1000;
         }
         .modal-content {
-          width: 500px; padding: 30px; background: white;
+          width: 650px; max-width: 95vw; max-height: 90vh; overflow-y: auto; padding: 30px; background: white;
         }
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 12px; color: var(--text-muted); font-weight: 500; border-bottom: 2px solid #f0f0f0; }
