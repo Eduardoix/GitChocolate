@@ -72,7 +72,8 @@ const NutritionalLabel = ({
 
   const getVD = (val, ref) => {
     if (!val) return '0';
-    const numVal = parseFloat(val.replace(',', '.'));
+    const numVal = typeof val === 'string' ? parseFloat(val.replace(',', '.')) : parseFloat(val);
+    if (isNaN(numVal)) return '0';
     const vd = Math.round((numVal / ref) * 100);
     return vd;
   };

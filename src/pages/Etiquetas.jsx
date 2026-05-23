@@ -63,18 +63,16 @@ const Etiquetas = () => {
   }, []);
 
   const calculateNutrition = (items) => {
-    const gTotal = items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.perc_gordura_total || 0) / 100), 0);
-    
     return {
-      kcal: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.kcal_100g || 0) / 100), 0)),
+      kcal: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.valor_energetico_kcal || 0) / 100), 0)),
       carb: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.carboidratos_g || 0) / 100), 0)),
-      sugarTotal: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.acucares_totais_g || 0) / 100), 0)),
-      sugarAdded: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.acucares_adicionados_g || 0) / 100), 0)),
-      protein: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.proteinas_g || 0) / 100), 0)),
-      fatTotal: Math.round(gTotal),
+      sugarTotal: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.acucar_total_g || 0) / 100), 0)),
+      sugarAdded: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.acucar_adicionado_g || 0) / 100), 0)),
+      protein: Number(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.proteinas_g || 0) / 100), 0).toFixed(1)),
+      fatTotal: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.gorduras_totais_g || 0) / 100), 0)),
       fatSat: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.gorduras_saturadas_g || 0) / 100), 0)),
-      fatTrans: 0,
-      fiber: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.fibras_g || 0) / 100), 0)),
+      fatTrans: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.gorduras_trans_g || 0) / 100), 0)),
+      fiber: Number(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.fibra_alimentar_g || 0) / 100), 0).toFixed(1)),
       sodium: Math.round(items.reduce((acc, curr) => acc + (curr.percentual * Number(curr.insumos?.sodio_mg || 0) / 100), 0)),
     };
   };
@@ -123,7 +121,7 @@ const Etiquetas = () => {
     } else {
       const nutrition = calculateNutrition(items);
       const ingredients = items.map(it => ({
-        nome: it.insumos.nome,
+        nome: it.insumos?.nome || 'Insumo Desconhecido',
         perc: it.percentual
       }));
 
