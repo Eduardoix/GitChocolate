@@ -126,7 +126,7 @@ const Etiquetas = () => {
       }));
 
       const cocoaPerc = items.reduce((acc, it) => {
-        const nome = (it.insumos.nome || '').toLowerCase();
+        const nome = (it.insumos?.nome || '').toLowerCase();
         if (nome.includes('cacau') || nome.includes('nibs') || nome.includes('liquor') || nome.includes('massa')) {
           return acc + it.percentual;
         }
