@@ -74,6 +74,7 @@ const Sidebar = () => {
         .sidebar {
           width: 260px;
           height: 100vh;
+          height: 100dvh;
           background: var(--primary);
           color: white;
           position: fixed;
@@ -82,6 +83,7 @@ const Sidebar = () => {
           display: flex;
           flex-direction: column;
           padding: 30px 20px;
+          padding-bottom: max(30px, env(safe-area-inset-bottom));
           z-index: 100;
         }
         .sidebar-logo {
@@ -89,6 +91,7 @@ const Sidebar = () => {
           align-items: center;
           gap: 12px;
           margin-bottom: 40px;
+          flex-shrink: 0;
         }
         .logo-icon {
           width: 32px;
@@ -115,6 +118,9 @@ const Sidebar = () => {
           display: flex;
           flex-direction: column;
           gap: 8px;
+          overflow-y: auto;
+          min-height: 0;
+          margin-bottom: 10px;
         }
         .nav-item {
           display: flex;
@@ -125,6 +131,7 @@ const Sidebar = () => {
           text-decoration: none;
           border-radius: 10px;
           transition: var(--transition);
+          flex-shrink: 0;
         }
         .nav-item:hover {
           background: rgba(255, 255, 255, 0.05);
@@ -139,6 +146,7 @@ const Sidebar = () => {
           margin-top: auto;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           padding-top: 20px;
+          flex-shrink: 0;
         }
 
         @media (max-width: 768px) {
