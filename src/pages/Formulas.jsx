@@ -304,7 +304,7 @@ const Formulas = () => {
                           { name: 'Manteiga', valor: Number(totalCocoaFat.toFixed(1)), fill: totalCocoaFat < 30 ? '#e74c3c' : '#2ecc71' },
                           { name: 'Cacau', valor: Number(totalCocoaPerc.toFixed(1)), fill: '#3d1d13' }
                         ].map((entry, index) => (
-                          <Cell key={\`cell-\${index}\`} fill={entry.fill} />
+                          <Cell key={"cell-" + index} fill={entry.fill} />
                         ))
                       }
                     </Bar>
