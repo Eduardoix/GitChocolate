@@ -275,47 +275,48 @@ const Formulas = () => {
         </div>
 
         <div className="flex gap-3" style={{ position: 'sticky', top: '20px', alignSelf: 'flex-start' }}>
-          {/* Coluna 2: Índices Técnicos (Gráfico) */}
+          {/* Coluna 2: Índices Técnicos */}
           <div className="flex-column gap-3" style={{ width: '380px' }}>
-            <div className="card" style={{ height: '360px', display: 'flex', flexDirection: 'column' }}>
-              <h3>Análise Técnica (%)</h3>
-              <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '10px' }}>Atualizado em tempo real</p>
-              <div style={{ flex: 1, minHeight: 0 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart 
-                    data={[
-                      { name: 'Eutético', valor: Number(eutecticIndex.toFixed(1)), fill: eutecticIndex > 20 ? '#e74c3c' : '#d4af37' },
-                      { name: 'Manteiga', valor: Number(totalCocoaFat.toFixed(1)), fill: totalCocoaFat < 30 ? '#e74c3c' : '#2ecc71' },
-                      { name: 'Cacau', valor: Number(totalCocoaPerc.toFixed(1)), fill: '#3d1d13' }
-                    ]} 
-                    margin={{ top: 20, right: 30, left: 0, bottom: 5 }} 
-                    layout="vertical"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" domain={[0, 100]} />
-                    <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12, fontWeight: 600 }} />
-                    <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)'}} formatter={(value) => value + '%'} />
-                    <ReferenceLine x={20} stroke="#e74c3c" strokeDasharray="3 3" label={{ position: 'top', value: 'Máx Eutético', fill: '#e74c3c', fontSize: 10 }} />
-                    <ReferenceLine x={30} stroke="#2ecc71" strokeDasharray="3 3" label={{ position: 'top', value: 'Mín Manteiga', fill: '#2ecc71', fontSize: 10 }} />
-                    <Bar dataKey="valor" radius={[0, 4, 4, 0]} barSize={24} label={{ position: 'right', fill: '#666', fontSize: 12, formatter: (val) => val + '%' }}>
-                      {
-                        [
-                          { name: 'Eutético', valor: Number(eutecticIndex.toFixed(1)), fill: eutecticIndex > 20 ? '#e74c3c' : '#d4af37' },
-                          { name: 'Manteiga', valor: Number(totalCocoaFat.toFixed(1)), fill: totalCocoaFat < 30 ? '#e74c3c' : '#2ecc71' },
-                          { name: 'Cacau', valor: Number(totalCocoaPerc.toFixed(1)), fill: '#3d1d13' }
-                        ].map((entry, index) => (
-                          <Cell key={"cell-" + index} fill={entry.fill} />
-                        ))
-                      }
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+            <div className={`card ${eutecticIndex > 20 ? 'border-error' : 'border-success'}`}>
+              <h3>Índice Eutético</h3>
+              <div className="eutectic-gauge mt-2">
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ 
+                    width: `${Math.min(eutecticIndex * 5, 100)}%`,
+                    backgroundColor: eutecticIndex > 20 ? 'var(--error)' : 'var(--secondary)'
+                  }} />
+                </div>
               </div>
-              <div className="flex-column gap-1 mt-2">
-                {eutecticIndex > 20 && <p className="alert-box error m-0 p-2" style={{margin:0}}>Eutético Alto: Risco de Instabilidade Reológica.</p>}
-                {totalCocoaFat < 30 && <p className="alert-box error m-0 p-2" style={{margin:0}}>Manteiga Baixa: Abaixo do mínimo técnico (30%).</p>}
-                {eutecticIndex <= 20 && totalCocoaFat >= 30 && <p className="alert-box success m-0 p-2" style={{margin:0}}>Parâmetros Técnicos OK.</p>}
+              <h2 className="mt-2" style={{ textAlign: 'center' }}>{eutecticIndex.toFixed(1)}%</h2>
+              {eutecticIndex > 20 && <p className="alert-box error mt-2">Risco de Instabilidade Reológica.</p>}
+            </div>
+
+            <div className={`card ${totalCocoaFat < 30 ? 'border-error' : 'border-success'}`}>
+              <h3>Manteiga de Cacau Total</h3>
+              <div className="eutectic-gauge mt-2">
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ 
+                    width: `${Math.min(totalCocoaFat * 2, 100)}%`, 
+                    backgroundColor: totalCocoaFat < 30 ? 'var(--error)' : '#2e7d32'
+                  }} />
+                </div>
               </div>
+              <h2 className="mt-2" style={{ textAlign: 'center' }}>{totalCocoaFat.toFixed(1)}%</h2>
+              {totalCocoaFat < 30 && <p className="alert-box error mt-2">Abaixo do mínimo técnico (30%).</p>}
+            </div>
+
+            <div className="card border-primary">
+              <h3>Cacau Total (Nibs+Liquor+Manteiga)</h3>
+              <div className="eutectic-gauge mt-2">
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ 
+                    width: `${totalCocoaPerc}%`, 
+                    backgroundColor: 'var(--primary)'
+                  }} />
+                </div>
+              </div>
+              <h2 className="mt-2" style={{ textAlign: 'center' }}>{totalCocoaPerc.toFixed(1)}%</h2>
+              <p className="alert-box success mt-2" style={{ backgroundColor: '#efebe9' }}>Referência comercial do chocolate.</p>
             </div>
           </div>
 
