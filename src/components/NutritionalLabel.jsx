@@ -188,16 +188,16 @@ const NutritionalLabel = ({
 
       <div className="ingredients-section mt-1">
         <div><strong>INGREDIENTES:</strong> {ingredientsString}.</div>
-        {contemLactose && (
+        {containsLactose && (
           <div className="allergen-alert"><strong>CONTÉM LACTOSE</strong></div>
         )}
-        {!contemLactose && (
+        {!containsLactose && (
           <div className="allergen-alert"><strong>NÃO CONTÉM LACTOSE</strong></div>
         )}
-        {contemGluten && (
+        {containsGluten && (
           <div className="allergen-alert"><strong>CONTÉM GLÚTEN</strong></div>
         )}
-        {!contemGluten && (
+        {!containsGluten && (
           <div className="allergen-alert"><strong>NÃO CONTÉM GLÚTEN</strong></div>
         )}
       </div>
